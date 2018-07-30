@@ -1,0 +1,3 @@
+[submodule "xvcserver"]
+	path = xvcserver
+	url = https://github.com/ciniml/XilinxVirtualCable
