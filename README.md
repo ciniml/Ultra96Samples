@@ -8,6 +8,11 @@ Ultra96で遊ぶための非公式サンプルプロジェクト。
 
 今のところはPL側のロジックを使ってLチカを行うもののみ。
 
+あと、Debug Bridgeとかも含まれている。
+
+![サンプルプロジェクトのデザイン](design.png)
+
+
 ## 環境
 
 * Vivado 2018.2
@@ -52,6 +57,7 @@ Ultra96で遊ぶための非公式サンプルプロジェクト。
     $ cd ultra96hw
     $ make restore
     ```
+
 
 ## PetaLinuxのビルド方法
 
@@ -105,3 +111,76 @@ $ petalinux-package  --boot --uboot images/linux/u-boot.elf --fpga images/linux/
     * ultra96_linux/images/linux/image.ub
     * uboot.env
 
+## Virtual Cable経由でILAを使う
+
+* Virtual Cableを使うために、Debug Bridgeが入っている。
+    * 0x00_8001_0000 にマップしてある。
+* AWS EC2 F1インスタンスと同様に、Virtual Cable Server をPS上で実行しておけば、ILAやVIOといったPLに対するJTAG経由でのデバッグ機能が使用可能。
+    * Debug BridgeはPLのDebug Hubに接続されるので、あくまでPLに対してのみ
+* Virtual JTAGについてはAWS EC2 F1について、みんなでワイワイ調べる会での資料を参照
+    * https://www.slideshare.net/ciniml/ec2-f1-virtual-jtag
+
+
+### Virtual Cable Serverのビルド
+
+* Virtual Cable ServerのソースコードはXilinxのGitHubリポジトリに置いてある。
+* 元のソースコードはUIOドライバを用いるものだったが、現状ではUIOドライバの導入がうまくいっていないので、`/dev/mem`経由でアクセスするように変更している。
+    * 変更したものはforkしたリポジトリに置いてある。
+* Virtual Cable Serverのソースコードは `xvcserver` ディレクトリにsubmoduleとして入っているので、サブモジュールの本体を取得しておく
+    * git submodule update --init
+* xvcsrever/XAPP1251でmakeを実行すればビルドできる。
+
+```
+$ cd xvcserver/XAPP1251
+$ make
+```
+
+### Virtual Cable Serverの実行
+
+* 引数なしでxvcServerを実行する
+```
+$ ./xvcServer
+```
+
+### Vivadoから接続
+
+* VivadoでHardware Managerを開く
+* 画面上部の `Open target` をクリックし、`Open New Target` を選択する。
+
+    ![Open New Target](figure/vivado_hwmgr_open_new_target.png)
+
+* `Connect to:` で `Local server` を選択して `Next` を押す。
+
+    ![Select Server](figure/vivado_hwmgr_select_server.png)
+
+* `Add Xilinx Virtual Cable (XVC)` を押す。
+
+    ![Select Server](figure/vivado_hwmgr_add_xvc.png)
+
+* `Host name` に Ultra96のアドレス、 `Port` は `2542` (デフォルト)を入力してOKを押す。
+    
+    ![Select Server](figure/vivado_hwmgr_xvc_address.png)
+
+* 正常に接続できれば、`Hardware Targets` にVirtual Cableのターゲットが表示されるので選択する。
+* `Hardware Devices` に `debug_bridge_0` が表示されるので選択する。
+* `Next` を押して進む。
+* `Finish` を押す。
+
+    ![Select Server](figure/vivado_hwmgr_xvc_added.png)
+
+* このままだとILAの設定が読み込まれていないので、手動で読み込む。
+* `HARDWARE MANAGER` で `debug_bridge_0` を選択する。
+* `Hardware Device Properties` の `Probe files:` にILAの定義ファイルのパスを設定する。
+    * 直接入力もできるが、 `...` を押せばファイルダイアログが表示される。
+    
+    ![Select Server](figure/vivado_hwmgr_load_probes_file.png)
+
+* `ultra96hw/ultra96hw.runs/impl_1/debug_nets.ltx` を選択する。
+
+    ![Select Server](figure/vivado_hwmgr_select_ltx.png)
+
+* ILAを使ってみる。
+    * `hw_ila_1` タブをひらいて、赤丸のところのボタン (Run trigger immediate for this ILA core) を押す
+    * ILAで取得した波形が表示される。
+
+    ![Select Server](figure/vivado_hwmgr_use_ila.png)
