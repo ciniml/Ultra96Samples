@@ -3,7 +3,7 @@ if { [llength $argv] == 0 } {
 }
 
 set project_name [lindex $argv 0]
-set board_part {em.avnet.com:ultra96:part0:1.2} 
+set board_part {em.avnet.com:ultra96v2:part0:1.0}
 set device_part {xczu3eg-sbva484-1-e}
 
 create_project -part $device_part $project_name .
