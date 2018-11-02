@@ -1,0 +1,36 @@
+
+/dts-v1/;
+/plugin/;
+/include/ "ultra96hw.sdk/devicetree/pl.dtsi"
+
+&overlay0 {
+	firmware-name = "design_top_wrapper.bit.bin";
+};
+&overlay1 {
+	#address-cells = <2>;
+	#size-cells = <2>;
+};
+
+&fibonacci_0 {
+	compatible = "generic-uio";
+};
+&axi_gpio_0 {
+	compatible = "generic-uio";
+};
+
+/ {
+	fragment@0 {
+		#address-cells = <2>;
+		#size-cells = <2>;
+	};
+	fragment@2 {
+		target = <&amba>;
+		overlay2: __overlay__ {
+			dmabuf0 {
+				compatible  = "ikwzm,udmabuf-0.10.a";
+				device-name = "udmabuf0";
+				size = <0x00001000>;
+			};
+		};
+	};
+};

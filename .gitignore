@@ -1,0 +1,9 @@
+.metadata/
+*.log
+*.jou
+*.cache
+*.runs
+*.srcs
+*.sdk
+*.ip_user_files
+*.hw

@@ -1,3 +1,6 @@
 [submodule "xvcserver"]
 	path = xvcserver
 	url = https://github.com/ciniml/XilinxVirtualCable
+[submodule "device-tree-xlnx"]
+	path = device-tree-xlnx
+	url = https://github.com/Xilinx/device-tree-xlnx.git

@@ -1,0 +1,4 @@
+all:
+{
+    [destination_device = pl] ultra96hw.runs/impl_1/design_top_wrapper.bit
+}
