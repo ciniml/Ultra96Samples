@@ -10,10 +10,10 @@ clean:
 	-@rm -rf $(PROJECT_NAME)
 	-@rm vivado_hls.cpp .cproject .project
 
-restore: vivado_hls.app
+restore: $(PROJECT_NAME)/vivado_hls.app
 ip: $(PROJECT_NAME)/solution1/impl/ip/component.xml
 
-vivado_hls.app: restore_project.tcl
+$(PROJECT_NAME)/vivado_hls.app: restore_project.tcl
 	$(VIVADO_HLS) ./restore_project.tcl $(PROJECT_NAME) fibonacci
 
 $(PROJECT_NAME)/solution1/impl/ip/component.xml: fib.cpp fib.hpp vivado_hls.app implement.tcl

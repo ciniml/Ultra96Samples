@@ -52,7 +52,7 @@ boot.bin: ZynqMP-FPGA-Linux $(BITSTREAM)
 	$(BOOTGEN) -image ./bootbin.bif -arch zynqmp -w -o $@
 
 $(SDK_DIR)/devicetree/pl.dtsi: $(HARDWARE_DEF)
-	cd $(SDK_DIR); $(HSI) -mode batch -source ../generate_devicetree.tcl -tclargs $(BD_NAME)_wrapper $(XILINX_DEVICE_TREE) devicetree
+	cd $(SDK_DIR); $(HSI) -mode batch -source ../generate_devicetree.tcl -tclargs $(BD_NAME)_wrapper `realpath --relative-to=. $(XILINX_DEVICE_TREE)` devicetree
 
 overlay.dtb: $(SDK_DIR)/devicetree/pl.dtsi overlay.dts
 	dtc -I dts -O dtb -@ overlay.dts -o $@
