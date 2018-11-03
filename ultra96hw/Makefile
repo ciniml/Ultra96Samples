@@ -26,10 +26,10 @@ clean:
 open: $(PROJECT_NAME).xpr
 	$(VIVADO) $<&
 
-../fib/fib/solution1/impl/component.xml:
+../fib/fib/solution1/impl/ip/component.xml:
 	cd ../fib; make ip
 
-$(PROJECT_NAME).xpr: ../fib/fib/solution1/impl/component.xml $(SRCS)
+$(PROJECT_NAME).xpr: ../fib/fib/solution1/impl/ip/component.xml $(SRCS)
 	$(VIVADO) -mode batch -source restore_project.tcl -tclargs $(PROJECT_NAME)
 
 $(BITSTREAM) $(HARDWARE_DEF): $(PROJECT_NAME).xpr $(SRCS) $(PROJECT_NAME).srcs/sources_1/bd/$(BD_NAME)/$(BD_NAME).bd
@@ -52,7 +52,7 @@ boot.bin: ZynqMP-FPGA-Linux $(BITSTREAM)
 	$(BOOTGEN) -image ./bootbin.bif -arch zynqmp -w -o $@
 
 $(SDK_DIR)/devicetree/pl.dtsi: $(HARDWARE_DEF)
-	cd $(SDK_DIR); $(HSI) -mode batch -source ../generate_devicetree.tcl -tclargs $(BD_NAME)_wrapper `realpath --relative-to=. $(XILINX_DEVICE_TREE)` devicetree
+	cd $(SDK_DIR); $(HSI) -mode batch -source ../generate_devicetree.tcl -tclargs $(BD_NAME)_wrapper `realpath --relative-to=. $(XILINX_DEVICE_TREE)` devicetree psu_cortexa53_0
 
 overlay.dtb: $(SDK_DIR)/devicetree/pl.dtsi overlay.dts
 	dtc -I dts -O dtb -@ overlay.dts -o $@
